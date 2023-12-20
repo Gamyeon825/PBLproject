@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, Initial-scale=1.0" />
+    <title>NTUT MAP</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="../static/css/root.css" />
+    <!-- vue -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- axios -->
+    <!-- <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.js"
+      integrity="sha512-SXo2rCaEJmbAPoxtaSjW+/hLaVCMAJ1CX8XnIP02x6/LIaWQp4GipKxQhBwL8Tn5U/K+lD9AaM4f4mXJdKnDQw=="
+      crossorigin="anonymous"
+    ></script> -->
+    <!-- sweet alert -->
+    <!-- <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+    <!-- Remix Icons -->
+    <!-- <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    /> -->
+  </head>
+  <body>
+    <div id="vue"></div>
+    <div class="map"><img src="../static/buildingMap.jpg" alt="" /></div>
+  </body>
+
+  <script>
+    Vue.createApp({
+      //data 函式
+      data() {
+        return {
+          sideBar: ["編輯個人檔案", "使用者管理", "優惠券管理"],
+        };
+      },
+      watch: {
+        // userNameInput: "EnableUserNameChangeButton",
+      },
+      methods: {
+        Init() {
+          // this.GetData();
+        },
+        GetData() {
+          fetch("..res/rootData.json")
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((error) => console.error("Error:", error));
+        },
+        SearchSuggestionInCoupon(newValue) {
+          this.EnableCouponSubmitButton(newValue);
+          axios
+            .post("search", {
+              userName: this.userNameBeGiven,
+              type: "買家",
+            })
+            .then((response) => {
+              if (response.data.message == false) {
+                this.searchSuggestionShow = false;
+                this.searchResult = [];
+              } else {
+                this.searchResult = [];
+                var tempList = response.data;
+                for (i = 0; i < tempList.length; i++) {
+                  this.searchResult.push({ text: tempList[i] });
+                }
+                if (tempList.length > 0 && newValue != "")
+                  this.searchSuggestionShow = true;
+                else this.searchSuggestionShow = false;
+              }
+            })
+            .catch((error) => console.log(error));
+        },
+      },
+
+      // mounted 函式
+      mounted() {
+        this.Init();
+      },
+    }).mount("#vue");
+  </script>
+</html>
